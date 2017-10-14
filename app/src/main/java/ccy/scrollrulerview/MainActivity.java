@@ -3,6 +3,7 @@ package ccy.scrollrulerview;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,5 +25,11 @@ public class MainActivity extends AppCompatActivity {
         s3.setUnit("厘米");
         s3.setCurrentValue(35);
         s3.setRulerBackground(0x33888888);
+        s3.setOnValueChangedListener(new ScrollRulerView.OnValueChangedListener() {
+            @Override
+            public void onValueChanged(float value) {
+                Log.d("ccy","current value = " + value);
+            }
+        });
     }
 }

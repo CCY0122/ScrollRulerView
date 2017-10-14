@@ -34,14 +34,11 @@ public class ScrollRulerView extends View {
     private static int DEFAULT_START_NUM = 0;
     private static int DEFAULT_END_NUM = 100;
 
-
     private int primaryColor;  //主题颜色
     private float primaryTextSize;
     private int textColor;  //刻度字体颜色
     private float textSize;
     private int lineColor;
-
-
     private int rulerBackground;
     private String unit;  //单位字符串
     private int startNum; //起点值
@@ -64,6 +61,9 @@ public class ScrollRulerView extends View {
     private Scroller scroller;
     private ViewConfiguration viewConfiguration;
     private VelocityTracker velocityTracker;
+
+    private OnValueChangedListener listener;
+    private float lastValue;
 
     public ScrollRulerView(Context context) {
         this(context, null);
@@ -96,6 +96,7 @@ public class ScrollRulerView extends View {
         initSize();
 
         initPaint();
+
 
     }
 
@@ -283,6 +284,10 @@ public class ScrollRulerView extends View {
         }else {     //刻度从大到小
             value = startNum * 10  - gapCount;
         }
+        if(value != lastValue && listener != null){
+            listener.onValueChanged(value);
+        }
+        lastValue = value;
         return value / 10.0f;
     }
 
@@ -366,6 +371,7 @@ public class ScrollRulerView extends View {
             invalidate();
         }
     }
+
 
 
     //以下为各属性setter/getter
@@ -466,6 +472,18 @@ public class ScrollRulerView extends View {
     }
 
 
+    public void setOnValueChangedListener(OnValueChangedListener l){
+        this.listener = l;
+    }
+
+    public interface OnValueChangedListener{
+        /**
+         * 当前刻度变化回调
+         * @param value
+         */
+        void onValueChanged(float value);
+
+    }
 
 
     private int dp2px(float dp) {
