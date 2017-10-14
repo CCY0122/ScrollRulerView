@@ -18,6 +18,10 @@ import android.widget.Scroller;
 
 /**
  * Created by ccy on 2017-10-14.
+ * 小广告：
+ * 本人github：https://github.com/CCY0122
+ * 我是2017届毕业生，目前就职于杭州雄迈信息，工作经验：2016.12——至今
+ * 目前正积极寻找新的工作平台，有工作机会推荐可联系我~qq：671518768
  */
 
 public class ScrollRulerView extends View {
@@ -25,6 +29,7 @@ public class ScrollRulerView extends View {
     private static int DEFAULT_PRIMARY_COLOR = 0xFF3CB371;
     private static int DEFAULT_TEXT_COLOR = Color.BLACK;
     private static int DEFAULT_LINE_COLOR = Color.GRAY;
+    private static int DEFAULT_RULER_BACKGROUND = 0x00000000; //默认没颜色
     private static String DEFAULT_UNIT = "kg";
     private static int DEFAULT_START_NUM = 0;
     private static int DEFAULT_END_NUM = 100;
@@ -35,6 +40,9 @@ public class ScrollRulerView extends View {
     private int textColor;  //刻度字体颜色
     private float textSize;
     private int lineColor;
+
+
+    private int rulerBackground;
     private String unit;  //单位字符串
     private int startNum; //起点值
     private int endNum; //终点值
@@ -48,6 +56,7 @@ public class ScrollRulerView extends View {
     private Paint primaryPaint;
     private Paint textPaint;
     private Paint linePaint;
+    private Paint backgroundPaint;
 
     private Rect textRect = new Rect();
     private Rect primaryTextRect = new Rect();
@@ -76,6 +85,7 @@ public class ScrollRulerView extends View {
         textColor = ta.getColor(R.styleable.ScrollRulerView_text_color, DEFAULT_TEXT_COLOR);
         textSize = ta.getDimension(R.styleable.ScrollRulerView_text_size, sp2px(15));
         lineColor = ta.getColor(R.styleable.ScrollRulerView_line_color, DEFAULT_LINE_COLOR);
+        rulerBackground = ta.getColor(R.styleable.ScrollRulerView_rulerBackgroundColor,DEFAULT_RULER_BACKGROUND);
         unit = ta.getString(R.styleable.ScrollRulerView_unit);
         unit = unit == null ? DEFAULT_UNIT : unit;
         startNum = ta.getInt(R.styleable.ScrollRulerView_start_num, DEFAULT_START_NUM);
@@ -94,6 +104,7 @@ public class ScrollRulerView extends View {
         primaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         primaryPaint.setColor(primaryColor);
         primaryPaint.setTextSize(primaryTextSize);
@@ -102,7 +113,9 @@ public class ScrollRulerView extends View {
         textPaint.setTextSize(textSize);
         textPaint.setTextAlign(Paint.Align.CENTER);
         linePaint.setColor(lineColor);
-        linePaint.setStrokeWidth(dp2px(1));
+        linePaint.setStrokeWidth(dp2px(1.5f));  //刻度线粗
+//        linePaint.setStrokeCap(Paint.Cap.ROUND);
+        backgroundPaint.setColor(rulerBackground);
 
     }
 
@@ -154,10 +167,21 @@ public class ScrollRulerView extends View {
 
         float startX, startY, endX, endY; //起点和终点
 
-        //1、先画一条长直线
+        //1、画尺子背景色
 
+        textPaint.getTextBounds("0", 0, "0".length(), textRect);  //简单的用"0"代表之后刻度值的高度
         startX = 0;
         endX = startX + contentWidth;
+        startY = getMeasuredHeight() / 2;
+        endY = startY + 2*lineLength + textRect.height() + dp2px(15);
+        canvas.drawRect(startX
+        ,startY
+        ,endX
+        ,endY
+        ,backgroundPaint);
+
+        //2、画一条长直线
+
         startY = endY = getMeasuredHeight() / 2;
         canvas.drawLine(startX
                 , startY
@@ -165,9 +189,9 @@ public class ScrollRulerView extends View {
                 , endY
                 , linePaint);
 
-        //2、再画直线下的刻度和对应的数值
+        //3、画直线下的刻度和对应的数值
 
-        startX = endX = getMeasuredWidth() / 2;   //从View的一般宽开始画，否则滑动的时候前半段刻度就取不到了
+        startX = endX = getMeasuredWidth() / 2;   //从View的一半宽开始画，否则滑动的时候前半段刻度就滑不到了
         int lineCount = Math.abs(endNum - startNum) * 10;  //刻度的数量
         Paint.FontMetrics metrics = textPaint.getFontMetrics();
         float textCenterY;
@@ -198,7 +222,7 @@ public class ScrollRulerView extends View {
 
         }
 
-        //3、最后把中间的的刻度指针画上
+        //4、最后把中间的的刻度指针画上
 
         startY = startY + linePaint.getStrokeWidth() / 2;  //细节调整！！向下偏移半个线段粗
 
@@ -351,6 +375,7 @@ public class ScrollRulerView extends View {
 
     public void setPrimaryColor(int primaryColor) {
         this.primaryColor = primaryColor;
+        primaryPaint.setColor(primaryColor);
         invalidate();
     }
 
@@ -360,6 +385,7 @@ public class ScrollRulerView extends View {
 
     public void setPrimaryTextSize(float primaryTextSize) {
         this.primaryTextSize = primaryTextSize;
+        primaryPaint.setTextSize(primaryTextSize);
         invalidate();
     }
 
@@ -369,6 +395,7 @@ public class ScrollRulerView extends View {
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
+        textPaint.setColor(textColor);
         invalidate();
     }
 
@@ -378,6 +405,7 @@ public class ScrollRulerView extends View {
 
     public void setTextSize(float textSize) {
         this.textSize = textSize;
+        textPaint.setTextSize(textSize);
         invalidate();
     }
 
@@ -387,6 +415,7 @@ public class ScrollRulerView extends View {
 
     public void setLineColor(int lineColor) {
         this.lineColor = lineColor;
+        linePaint.setColor(lineColor);
         invalidate();
     }
 
@@ -423,6 +452,16 @@ public class ScrollRulerView extends View {
 
     public void setMinGap(float minGap) {
         this.minGap = minGap;
+        invalidate();
+    }
+
+    public int getRulerBackground() {
+        return rulerBackground;
+    }
+
+    public void setRulerBackground(int rulerBackground) {
+        this.rulerBackground = rulerBackground;
+        backgroundPaint.setColor(rulerBackground);
         invalidate();
     }
 

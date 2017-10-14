@@ -6,6 +6,7 @@
         <attr name="text_color" format="color"/>
         <attr name="text_size" format="dimension"/>
         <attr name="line_color" format="color"/>
+        <attr name="rulerBackgroundColor" format="color"/>
         <attr name="unit" format="string"/>
         <attr name="start_num" format="integer"/>
         <attr name="end_num" format="integer"/>
