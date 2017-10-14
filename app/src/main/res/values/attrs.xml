@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ScrollRulerView">
+        <attr name="primary_color" format="color"/>
+        <attr name="primary_text_size" format="dimension"/>
+        <attr name="text_color" format="color"/>
+        <attr name="text_size" format="dimension"/>
+        <attr name="line_color" format="color"/>
+        <attr name="unit" format="string"/>
+        <attr name="start_num" format="integer"/>
+        <attr name="end_num" format="integer"/>
+        <attr name="min_gap" format="dimension"/>
+    </declare-styleable>
+</resources>
